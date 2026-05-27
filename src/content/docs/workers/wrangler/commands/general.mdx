@@ -47,7 +47,7 @@ wrangler login [OPTIONS]
 - `--callback-port` <Type text="string" /> <MetaInfo text="optional" />
   - Defaults to `8976`. Sets the port where Wrangler should listen for the OAuth callback. Ignored when `--experimental-device` is set.
 - `--experimental-device` <Type text="boolean" /> <MetaInfo text="optional" />
-  - Defaults to `false`. Use the OAuth 2.0 Device Authorization Grant ([RFC 8628](https://www.rfc-editor.org/rfc/rfc8628)) instead of the default localhost callback flow. See [Use `wrangler login` without a local callback server](#use-wrangler-login-without-a-local-callback-server) below.
+  - Defaults to `false`. Use the OAuth 2.0 Device Authorization Grant ([RFC 8628](https://www.rfc-editor.org/rfc/rfc8628)) instead of the default localhost callback flow. Refer to [Use `wrangler login` without a local callback server](#use-wrangler-login-without-a-local-callback-server).
 
 :::note
 
@@ -120,7 +120,7 @@ npx wrangler login --callback-host=0.0.0.0 --callback-port=9000
 The `--experimental-device` flag is experimental. The flag name, output, and exact behavior may change in future releases.
 :::
 
-The default `wrangler login` flow needs your browser to be able to reach a temporary local server on `localhost:8976`. In some environments — remote SSH sessions, containers without forwarded ports, GitHub Codespaces, or otherwise restricted networks — that callback URL is unreachable from the browser, and the workarounds in the previous sections may be difficult to set up.
+The default `wrangler login` flow needs your browser to be able to reach a temporary local server on `localhost:8976`. In some environments — remote SSH sessions, containers without forwarded ports, GitHub Codespaces, or otherwise restricted networks — that callback URL is unreachable from the browser, and setting up the workarounds for remote machines and containers may be difficult.
 
 For those cases, you can opt in to the [OAuth 2.0 Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628) instead. This flow does not start a local callback server. Instead, Wrangler prints a verification URL and a short user code to the terminal, opens the verification URL in your default browser, and polls Cloudflare for an access token while you approve the request.
 
