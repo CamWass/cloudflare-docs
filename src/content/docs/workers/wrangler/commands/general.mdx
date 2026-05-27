@@ -43,9 +43,11 @@ wrangler login [OPTIONS]
   - Allows to choose your set of OAuth scopes. The set of scopes must be entered in a whitespace-separated list,
     for example, `npx wrangler login --scopes account:read user:read`.
 - `--callback-host` <Type text="string" /> <MetaInfo text="optional" />
-  - Defaults to `localhost`. Sets the IP or hostname where Wrangler should listen for the OAuth callback.
+  - Defaults to `localhost`. Sets the IP or hostname where Wrangler should listen for the OAuth callback. Ignored when `--experimental-device` is set.
 - `--callback-port` <Type text="string" /> <MetaInfo text="optional" />
-  - Defaults to `8976`. Sets the port where Wrangler should listen for the OAuth callback.
+  - Defaults to `8976`. Sets the port where Wrangler should listen for the OAuth callback. Ignored when `--experimental-device` is set.
+- `--experimental-device` <Type text="boolean" /> <MetaInfo text="optional" />
+  - Defaults to `false`. Use the OAuth 2.0 Device Authorization Grant ([RFC 8628](https://www.rfc-editor.org/rfc/rfc8628)) instead of the default localhost callback flow. See [Use `wrangler login` without a local callback server](#use-wrangler-login-without-a-local-callback-server) below.
 
 :::note
 
@@ -110,6 +112,49 @@ docker run -p 8976:9000 <your-image>
 # Inside the container
 npx wrangler login --callback-host=0.0.0.0 --callback-port=9000
 ```
+
+### Use `wrangler login` without a local callback server
+
+:::note
+
+The `--experimental-device` flag is experimental. The flag name, output, and exact behavior may change in future releases.
+:::
+
+The default `wrangler login` flow needs your browser to be able to reach a temporary local server on `localhost:8976`. In some environments — remote SSH sessions, containers without forwarded ports, GitHub Codespaces, or otherwise restricted networks — that callback URL is unreachable from the browser, and the workarounds in the previous sections may be difficult to set up.
+
+For those cases, you can opt in to the [OAuth 2.0 Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628) instead. This flow does not start a local callback server. Instead, Wrangler prints a verification URL and a short user code to the terminal, opens the verification URL in your default browser, and polls Cloudflare for an access token while you approve the request.
+
+```sh
+npx wrangler login --experimental-device
+```
+
+```sh output
+ ⛅️ wrangler 4.x.x
+──────────────────
+Attempting to login via OAuth Device Authorization Grant (experimental)...
+To authorize Wrangler, please visit:
+
+  https://dash.cloudflare.com/oauth2/device
+
+and enter the code:
+
+  WDJB-MJHT
+
+You have 5 minutes to approve this request.
+
+█████████████████████████████████
+██ ▄▄▄▄▄ █▀▀ █ ▀▄█▀▄█ █ ▄▄▄▄▄ ██
+██ █   █ █▀ ▀ █▄▀ █▄ █ █   █ ██
+...
+
+Opening a link in your default browser: https://dash.cloudflare.com/oauth2/device?user_code=WDJB-MJHT
+```
+
+You have 5 minutes to approve the request before the user code expires. Wrangler will also print a QR code of the verification URL — scanning it with your phone takes you straight to the approval page with the user code pre-filled.
+
+Pass `--browser=false` to skip the automatic browser-open if you only want to scan the QR or copy/paste the URL yourself.
+
+`--callback-host` and `--callback-port` are ignored when `--experimental-device` is set, because this flow does not use a local callback server.
 
 ---
 
