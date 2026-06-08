@@ -65,6 +65,13 @@ const capabilityItems = [
 	...getLabelsByCategory(models, "platform"),
 ].map((c) => ({ value: c, label: c }));
 
+const providerItems = [
+	{ value: "cloudflare-hosted", label: "Cloudflare-hosted" },
+	{ value: "third-party", label: "Third-party" },
+];
+
+const showHostingFilter = new Set(models.map((m) => m.hosting)).size > 1;
+
 // Pre-compute card data (capabilities, author info, href) at build time
 const cards = sortedModels.map((model) => {
 	const author = getModelAuthor(model.name);
@@ -129,6 +136,16 @@ const cards = sortedModels.map((model) => {
 				items={capabilityItems}
 				client:load
 			/>
+			{
+				showHostingFilter && (
+					<FilterDropdownWrapper
+						label="Providers"
+						filterKey="providers"
+						items={providerItems}
+						client:load
+					/>
+				)
+			}
 			<FilterDropdownWrapper
 				label="Authors"
 				filterKey="authors"
@@ -187,6 +204,7 @@ const cards = sortedModels.map((model) => {
 					data-author={getModelAuthor(card.model.name)}
 					data-task={card.model.task.name}
 					data-capabilities={card.capabilities.join(",")}
+					data-hosting={card.model.hosting}
 					data-created={card.createdAt}
 					data-pinned={card.isPinned ? "true" : "false"}
 					data-pin-index={
@@ -257,7 +275,13 @@ const cards = sortedModels.map((model) => {
 		authors: [] as string[],
 		tasks: [] as string[],
 		capabilities: [] as string[],
+		providers: [] as string[],
 		sort: "newest" as "newest" | "oldest",
+	};
+
+	const providerToHosting: Record<string, "hosted" | "proxied"> = {
+		"cloudflare-hosted": "hosted",
+		"third-party": "proxied",
 	};
 
 	// ---------------------------------------------------------------------------
@@ -283,6 +307,7 @@ const cards = sortedModels.map((model) => {
 			const task = card.dataset.task ?? "";
 			const capsList = card.dataset.capabilities ?? "";
 			const caps = capsList ? capsList.split(",") : [];
+			const hosting = card.dataset.hosting ?? "";
 
 			let show = true;
 
@@ -300,6 +325,13 @@ const cards = sortedModels.map((model) => {
 				!state.capabilities.some((c) => caps.includes(c))
 			) {
 				show = false;
+			}
+
+			if (show && state.providers.length > 0) {
+				const allowedHosting = state.providers.map((p) => providerToHosting[p]);
+				if (!allowedHosting.includes(hosting as "hosted" | "proxied")) {
+					show = false;
+				}
 			}
 
 			if (
@@ -326,7 +358,8 @@ const cards = sortedModels.map((model) => {
 		const hasActive =
 			state.authors.length > 0 ||
 			state.tasks.length > 0 ||
-			state.capabilities.length > 0;
+			state.capabilities.length > 0 ||
+			state.providers.length > 0;
 		clearBtn.classList.toggle("hidden", !hasActive);
 
 		// Sync URL
@@ -380,6 +413,7 @@ const cards = sortedModels.map((model) => {
 		state.authors.forEach((a) => params.append("authors", a));
 		state.tasks.forEach((t) => params.append("tasks", t));
 		state.capabilities.forEach((c) => params.append("capabilities", c));
+		state.providers.forEach((p) => params.append("providers", p));
 		if (state.sort !== "newest") params.set("sort", state.sort);
 
 		const newUrl =
@@ -423,6 +457,9 @@ const cards = sortedModels.map((model) => {
 		if (key === "authors") state.authors = value;
 		else if (key === "tasks") state.tasks = value;
 		else if (key === "capabilities") state.capabilities = value;
+		else if (key === "providers") {
+			state.providers = value.filter((p) => p in providerToHosting);
+		}
 		applyFilters();
 	});
 
@@ -437,6 +474,7 @@ const cards = sortedModels.map((model) => {
 		state.authors = [];
 		state.tasks = [];
 		state.capabilities = [];
+		state.providers = [];
 		// Signal dropdowns to clear — they listen for this event
 		document.dispatchEvent(new CustomEvent("model-catalog-clear"));
 		applyFilters();

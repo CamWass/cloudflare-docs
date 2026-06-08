@@ -14,7 +14,13 @@ const CATEGORY_BADGE: Record<string, string> = {
 
 const { model } = Astro.props;
 
-const badges = model.properties.flatMap(({ property_id, value }) => {
+const isProxied = "hosting" in model && model.hosting === "proxied";
+const providerBadge = {
+	variant: "default",
+	text: isProxied ? "Third-party" : "Cloudflare-hosted",
+};
+
+const propertyBadges = model.properties.flatMap(({ property_id, value }) => {
 	// Boolean capability badges (data-driven)
 	if (property_id in CAPABILITY_PROPERTIES && value === "true") {
 		const def = CAPABILITY_PROPERTIES[property_id];
@@ -34,6 +40,8 @@ const badges = model.properties.flatMap(({ property_id, value }) => {
 
 	return [];
 });
+
+const badges = [providerBadge, ...propertyBadges];
 ---
 
 <ul

@@ -95,6 +95,12 @@ Hovering over a link in the diagram reveals a tooltip with the connected ASNs, t
 [rpki]: https://blog.cloudflare.com/rpki-details/
 [tier-1]: https://en.wikipedia.org/wiki/Tier_1_network
 
+## Bot vs. human traffic
+
+The percentage of HTTP requests classified as bot versus human, based on [bot scores](/bots/concepts/bot-score/). Requests with a bot score between 1 and 29 are classified as likely automated (bot), while requests with a score of 30 or above are classified as likely human. For more information, refer to [Bot classes](/radar/concepts/bot-classes/).
+
+By default, Radar shows bot vs. human traffic for requests to HTML content. This filter is meant to represent traditional web traffic by excluding API calls, asset requests (images, scripts, fonts), and other machine-to-machine requests.
+
 ## Certificates
 
 Encryption is a critical part of a safe Internet. SSL/TLS is the standard security technology for establishing an encrypted link between a client and a server.
@@ -261,6 +267,10 @@ On Cloudflare Radar’s [Security & Attacks page](https://radar.cloudflare.com/s
 - **None**: All other connections.
 
 Learn more about the TCP resets and timeouts dataset in our [blog post](https://blog.cloudflare.com/tcp-resets-timeouts).
+
+## TLD nameserver performance
+
+TLD nameserver performance measures the response time (latency) of authoritative nameservers for top-level domains, as observed from Cloudflare's [1.1.1.1](/1.1.1.1/) resolver infrastructure. When the resolver forwards a DNS query upstream to a TLD's nameserver, the round-trip time is captured from the issuing Cloudflare data center. For anycasted authoritative nameservers, upstream queries are generally handled by a topologically close data center, resulting in lower median latencies compared to nameservers not deployed using anycast. This data reveals which nameservers are fastest, how latency varies across Cloudflare's global network, and how TLD infrastructure performance trends over time.
 
 ## Threat categories
 
