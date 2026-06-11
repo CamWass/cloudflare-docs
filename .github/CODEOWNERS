@@ -249,7 +249,8 @@ package.json @cloudflare/content-engineering
 /src/content/docs/load-balancing/ @cloudflare/cf1-reviewers @elithrar @cloudflare/product-owners @ncrouch-cflare
 /src/content/partials/load-balancing/ @cloudflare/cf1-reviewers @elithrar @cloudflare/product-owners @ncrouch-cflare
 /src/content/docs/smart-shield/ @cloudflare/appsec-reviewers @elithrar @cloudflare/product-owners @ncrouch-cflare
-/src/content/docs/spectrum/ @cloudflare/appsec-reviewers @elithrar @cloudflare/product-owners @cansu
+/src/content/docs/spectrum/ @cloudflare/appsec-reviewers @elithrar @cloudflare/product-owners @cansu @steve-cloudflare
+/src/content/partials/spectrum/ @cloudflare/appsec-reviewers @elithrar @cloudflare/product-owners @cansu @steve-cloudflare
 /src/content/docs/speed/ @cloudflare/product-owners @ack-cf
 /src/content/partials/speed/ @cloudflare/product-owners @ack-cf
 /src/content/changelog/speed/ @cloudflare/pm-changelogs @cloudflare/product-owners @ack-cf
