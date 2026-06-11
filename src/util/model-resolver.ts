@@ -59,6 +59,7 @@ function cardToResolved(card: AiModelCard): ResolvedModel {
 		properties: card.properties,
 		dataSource: card.data_source,
 		hosting: card.hosting,
+		zdrComment: card.zdr_comment ?? null,
 	};
 }
 
@@ -106,6 +107,7 @@ function detailToResolved(detail: AiModelDetail): ResolvedModel {
 		properties: detail.properties,
 		dataSource: detail.data_source,
 		hosting: detail.hosting,
+		zdrComment: detail.zdr_comment ?? null,
 	};
 }
 
@@ -198,5 +200,6 @@ export function toModelCardData(model: ResolvedModel): ModelCardData {
 		properties: model.properties,
 		dataSource: model.dataSource,
 		hosting: model.hosting,
+		zdrComment: model.zdrComment,
 	};
 }

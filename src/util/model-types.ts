@@ -35,6 +35,12 @@ export interface ModelCardData {
 	}>;
 	dataSource: "catalog" | "legacy";
 	hosting: "proxied" | "hosted";
+	/**
+	 * Optional supplementary note about ZDR support (plan requirements,
+	 * conditions, etc.). Rendered as a `title` tooltip on the ZDR badge
+	 * when present. Null/undefined leaves the badge without a tooltip.
+	 */
+	zdrComment?: string | null;
 }
 
 /**
@@ -123,4 +129,12 @@ export interface ResolvedModel {
 	// "API Schemas (Raw)" download links. The URL base for these files is
 	// /ai/models/{modelId stripped of leading @}/.
 	schemaFiles?: string[];
+
+	/**
+	 * Optional supplementary note about ZDR support (plan requirements,
+	 * conditions, etc.). Surfaced from `zdr_comment` on the catalog row;
+	 * legacy Workers AI models never set it. Rendered as a `title`
+	 * tooltip on the ZDR badge in `ModelBadges`.
+	 */
+	zdrComment?: string | null;
 }

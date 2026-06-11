@@ -22,6 +22,8 @@ export const aiModelCardSchema = z.object({
 	context_length: z.number().nullable().optional(),
 	max_output_tokens: z.number().nullable().optional(),
 	supports_async: z.boolean(),
+	zdr: z.boolean().optional(),
+	zdr_comment: z.string().nullable().optional(),
 	hosting: z.enum(["proxied", "hosted"]),
 	data_source: z.enum(["catalog", "legacy"]),
 	properties: z
@@ -68,6 +70,8 @@ export const aiModelDetailSchema = z.object({
 	context_length: z.number().nullable().optional(),
 	max_output_tokens: z.number().nullable().optional(),
 	supports_async: z.boolean(),
+	zdr: z.boolean().optional(),
+	zdr_comment: z.string().nullable().optional(),
 	hosting: z.enum(["proxied", "hosted"]),
 	data_source: z.enum(["catalog", "legacy"]),
 	properties: z

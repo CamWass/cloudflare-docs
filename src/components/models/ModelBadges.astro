@@ -7,6 +7,12 @@ interface Props {
 	model: WorkersAIModelsSchema | ResolvedModel | ModelCardData;
 }
 
+type Badge = {
+	variant: string;
+	text: string;
+	title?: string;
+};
+
 const CATEGORY_BADGE: Record<string, string> = {
 	model: "default", // gray
 	platform: "caution", // orange
@@ -15,33 +21,42 @@ const CATEGORY_BADGE: Record<string, string> = {
 const { model } = Astro.props;
 
 const isProxied = "hosting" in model && model.hosting === "proxied";
-const providerBadge = {
+const providerBadge: Badge = {
 	variant: "default",
 	text: isProxied ? "Third-party" : "Cloudflare-hosted",
 };
 
-const propertyBadges = model.properties.flatMap(({ property_id, value }) => {
-	// Boolean capability badges (data-driven)
-	if (property_id in CAPABILITY_PROPERTIES && value === "true") {
-		const def = CAPABILITY_PROPERTIES[property_id];
-		return [
-			{ variant: CATEGORY_BADGE[def.category] ?? "default", text: def.label },
-		];
-	}
+const zdrComment = "zdrComment" in model ? (model.zdrComment ?? null) : null;
 
-	// Special case: deprecation badge (not a boolean capability)
-	if (property_id === "planned_deprecation_date") {
-		const timestamp = Math.floor(new Date(value as string).getTime());
-		if (Date.now() > timestamp) {
-			return [{ variant: "danger", text: "Deprecated" }];
+const propertyBadges: Badge[] = model.properties.flatMap(
+	({ property_id, value }) => {
+		// Boolean capability badges (data-driven)
+		if (property_id in CAPABILITY_PROPERTIES && value === "true") {
+			const def = CAPABILITY_PROPERTIES[property_id];
+			const badge: Badge = {
+				variant: CATEGORY_BADGE[def.category] ?? "default",
+				text: def.label,
+			};
+			if (property_id === "zdr" && zdrComment) {
+				badge.title = zdrComment;
+			}
+			return [badge];
 		}
-		return [{ variant: "danger", text: "Planned deprecation" }];
-	}
 
-	return [];
-});
+		// Special case: deprecation badge (not a boolean capability)
+		if (property_id === "planned_deprecation_date") {
+			const timestamp = Math.floor(new Date(value as string).getTime());
+			if (Date.now() > timestamp) {
+				return [{ variant: "danger", text: "Deprecated" }];
+			}
+			return [{ variant: "danger", text: "Planned deprecation" }];
+		}
 
-const badges = [providerBadge, ...propertyBadges];
+		return [];
+	},
+);
+
+const badges: Badge[] = [providerBadge, ...propertyBadges];
 ---
 
 <ul
@@ -50,7 +65,9 @@ const badges = [providerBadge, ...propertyBadges];
 	{
 		badges.map((badge) => (
 			<li>
-				<span class={`sl-badge ${badge.variant}`}>{badge.text}</span>
+				<span class={`sl-badge ${badge.variant}`} title={badge.title}>
+					{badge.text}
+				</span>
 			</li>
 		))
 	}
