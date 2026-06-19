@@ -238,6 +238,43 @@ When multiple cache headers are present, the most specific wins:
 
 Use `cloudflare-cdn-cache-control` when you want a longer edge TTL than you expose to browsers without leaking the directive downstream.
 
+### Override `Cache-Control` from the calling Worker
+
+Normally the callee decides how its responses are cached by setting `Cache-Control` on them. When one entrypoint invokes another cached entrypoint through a [`ctx.exports`](/workers/runtime-apis/bindings/service-bindings/rpc/) loopback, the **calling** entrypoint can instead supply the `Cache-Control` directive for that call by setting `cf.cacheControl` on the request.
+
+Here the `Backend` entrypoint returns no `Cache-Control` of its own; the default entrypoint decides the caching policy when it calls `Backend` through `ctx.exports`:
+
+<TypeScriptExample filename="src/index.ts">
+
+```ts
+import { WorkerEntrypoint } from "cloudflare:workers";
+
+// Cached entrypoint. It does not set Cache-Control itself.
+export class Backend extends WorkerEntrypoint<Env> {
+	async fetch(request: Request): Promise<Response> {
+		return new Response("Hello from the backend", {
+			headers: { "Content-Type": "text/html" },
+		});
+	}
+}
+
+// Gateway entrypoint. Caches the Backend's response for this call for
+// 5 minutes, without the Backend needing to set Cache-Control itself.
+export default {
+	async fetch(request, env, ctx): Promise<Response> {
+		return ctx.exports.Backend.fetch(request, {
+			cf: { cacheControl: "public, max-age=300" },
+		});
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+Cloudflare treats `cf.cacheControl` as a trusted `Cache-Control` directive for caching the callee's response on that call. The value is a standard `Cache-Control` string and follows the [same directive semantics](/cache/concepts/cache-control/) described throughout this page — `max-age`, `stale-while-revalidate`, `no-store`, and so on. This lets a calling entrypoint decide how a cached entrypoint's responses are cached without modifying that entrypoint's code.
+
+Like [custom cache keys](/workers/cache/cache-keys/#custom-cache-keys), `cf.cacheControl` is honored only for calls that stay within your account. Cloudflare drops the `cf` object whenever a request crosses an account boundary, so a caller in one account cannot change how a Worker in another account caches its responses. The directive also has no effect on eyeball requests, because the `cf` object on an inbound request is populated by Cloudflare rather than by the client.
+
 ## Response headers
 
 ### `Cf-Cache-Status`
