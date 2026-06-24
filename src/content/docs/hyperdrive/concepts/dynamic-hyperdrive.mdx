@@ -1,0 +1,55 @@
+---
+pcx_content_type: concept
+title: Dynamic Hyperdrive
+description: Connect Dynamic Workers to per-tenant databases.
+sidebar:
+  order: 5
+products:
+  - hyperdrive
+---
+
+## Overview
+
+Dynamic Hyperdrive lets [Dynamic Workers](/dynamic-workers/) use [Hyperdrive](/hyperdrive/) when querying existing databases. Use it when each Dynamic Worker needs to connect to a separate tenant database.
+
+A tenant is an isolated customer, user, or workspace in your platform. With Dynamic Hyperdrive, each tenant can use its own database.
+
+When a Dynamic Worker connects to a database, Cloudflare creates a Hyperdrive configuration for that database at runtime. Hyperdrive reuses that per-database configuration for connection pooling and query caching across Dynamic Worker requests that connect and query the same database.
+
+In this model, the [Worker Loader](/dynamic-workers/getting-started/#configure-worker-loader) creates each Dynamic Worker. Each Dynamic Worker connects to its own tenant database through Hyperdrive.
+
+TODO: replace with svg
+```txt
+                        +---------------+
+                        | Worker Loader |
+                        +---------------+
+                                |
+          +---------------------+---------------------+
+          |                     |                     |
+          v                     v                     v
++-------------------+ +-------------------+ +-------------------+
+| Dynamic Worker A  | | Dynamic Worker B  | | Dynamic Worker A  |
++-------------------+ +-------------------+ +-------------------+
+          |                     |                     |
+          |                     v                     |
+          |           +-------------------+           |
+          |           |   Hyperdrive B    |           |
+          |           +-------------------+           |
+          |                     |                     |
+          |                     v                     |
+          |           +-------------------+           |
+          |           | Tenant database B |           |
+          |           +-------------------+           |
+          |                                           |
+          +---------------------+---------------------+
+                                |
+                                v
+                      +-------------------+
+                      |   Hyperdrive A    |
+                      +-------------------+
+                                |
+                                v
+                      +-------------------+
+                      | Tenant database A |
+                      +-------------------+
+```
