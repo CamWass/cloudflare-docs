@@ -6,6 +6,8 @@ products:
   - access
 ---
 
+import { DashButton } from "~/components";
+
 A new Access Analytics dashboard is now available to all Cloudflare One customers. Customers can apply and combine multiple filters to dive into specific slices of their Access metrics. These filters include:
 
 - Logins granted and denied
@@ -19,4 +21,6 @@ A new Access Analytics dashboard is now available to all Cloudflare One customer
 
 ![Access Analytics](~/assets/images/changelog/cloudflare-one/accessanalytics.png)
 
-To access the new overview, log in to your Cloudflare [Zero Trust dashboard](https://one.dash.cloudflare.com/) and find Analytics in the side navigation bar.
+To access the new overview, log in to your [Cloudflare dashboard](https://dash.cloudflare.com/) and go to **Zero Trust** > **Insights** > **Analytics**.
+
+<DashButton url="/?to=/:account/insights/dashboards" zeroTrust />

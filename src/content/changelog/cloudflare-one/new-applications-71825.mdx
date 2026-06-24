@@ -5,10 +5,14 @@ date: 2025-05-18
 product: Gateway
 ---
 
+import { DashButton } from "~/components";
+
 42 new applications have been added for Zero Trust support within the Application Library and Gateway policy enforcement, giving you the ability to investigate or apply inline policies to these applications.
 
 33 of the 42 applications are Artificial Intelligence applications. The others are Human Resources (2 applications), Development (2 applications), Productivity (2 applications), Sales & Marketing, Public Cloud, and Security. 
 
-To view all available applications, log in to your Cloudflare [Zero Trust dashboard](https://one.dash.cloudflare.com/), navigate to the **App Library** under **My Team**.
+To view all available applications, log in to your [Cloudflare dashboard](https://dash.cloudflare.com/) and go to **Zero Trust** > **Team resources** > **App Library**.
+
+<DashButton url="/?to=/:account/team-resources/application-library" zeroTrust />
 
 For more information on creating Gateway policies, see our [Gateway policy documentation](/cloudflare-one/traffic-policies/).
